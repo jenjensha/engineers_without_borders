@@ -4,19 +4,19 @@ After three months of bootcamp  at [Restart Network](https://restart.network/). 
 
 Our task was to create a registration, log in page for engineers, NGO members and Admin section. 
 
-* NGO features:
+NGO features:
 
-NGO's can post questions that engineers can answer
-NGO's can connect to the engineers that engineers will receive notification on their profile about connecting to the NGO
+* NGO's can post questions that engineers can answer
+* NGO's can connect to the engineers that engineers will receive notification on their profile about connecting to the NGO
 
-* Engineers features:
+Engineers features:
 
-Engineers are able to answer questions from NGO 
-Engineers can create and manage their profile.
+* Engineers are able to answer questions from NGO 
+* Engineers can create and manage their profile.
 
-* Admin features:
+Admin features:
 
-Manage Engineers and NGO's registration
+* Manage Engineers and NGO's registration
 
 ## Technologies Used
 
