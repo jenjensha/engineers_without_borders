@@ -6,6 +6,7 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
+	'dbdriver' => 'mysqli',
 	'dsn' => getenv('CLEARDB_DATABASE_URL')
 );
 
