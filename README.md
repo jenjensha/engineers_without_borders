@@ -1,6 +1,6 @@
 # EWB-final-project
 
-After three months of bootcamp  at [Restart Network](https://restart.network/). We made a project for [Engineers without Borders](https://www.ewbnl.org/) together with my classmate @Saaeroos. This project was created using Code Igniter Framework.
+After three months of bootcamp  at [Restart Network](https://restart.network/). We made a project for [Engineers without Borders](https://www.ewbnl.org/) together with my classmate @[Saaeroos](https://github.com/Saaeroos). This project was created using Code Igniter Framework.
 
 Our task was to create a registration, log in page for engineers, NGO members and Admin section. 
 
