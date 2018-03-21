@@ -28,4 +28,4 @@ Admin features:
 
 ## URL link
 
-https://impact-week-final-ewb.appspot.com/
+ https://ewb-final-project.herokuapp.com/
