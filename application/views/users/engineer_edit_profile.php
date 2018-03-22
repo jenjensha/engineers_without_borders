@@ -21,33 +21,33 @@
 
       <div class="form-group">
         <label for="form_fields_activity">Fields of Expertise:</label>
-        <input  name="form_fields_activity" type="text" class="form-control" id="form_fields_activity" aria-describedby="form_fields_activityHelp" placeholder="Enter Field of Activities" value="<?php echo $engineer['fields_of_expertise'] ?>">
+        <input  name="form_fields_expertise" type="text" class="form-control" id="form_fields_activity" aria-describedby="form_fields_activityHelp" placeholder="Enter Field of Activities" value="<?php echo $engineer['fields_of_expertise'] ?>">
       </div>
 
       <div class="form-group">
         <label for="">Linked In:</label>
-        <input  name="form_website" type="text" class="form-control" id="form_linkedin_link" aria-describedby="form_linkedin_linkHelp" placeholder="Please enter your Linked In link" value="<?php echo $engineer['linkedin_link'] ?>">
+        <input  name="form_linkedin" type="text" class="form-control" id="form_linkedin_link" aria-describedby="form_linkedin_linkHelp" placeholder="Please enter your Linked In link" value="<?php echo $engineer['linkedin_link'] ?>">
       </div>
+
+      <div class="form-group">
+        <label for="">About me:</label>
+        <div>
+        <textarea name="form_aboutme"><?php echo $engineer['about_me'] ?></textarea>
+        </div>
+      </div>
+      
       <div class="form-group">
         <label for="form_username">Username:</label>
         <input  name="form_username" type="text" class="form-control" id="form_username" aria-describedby="form_usernameHelp" placeholder="Please choose Username" value="<?php echo $engineer['username'] ?>">
       </div>
 
-
-      <div class="form-group">
-        <label for="form_password">Password:</label>
-        <input  name="form_password" type="password" class="form-control" id="form_password" aria-describedby="form_passwordHelp" placeholder="Please enter your password">
-      </div>
-
-      <div class="form-group">
-        <label for="form_con_password">Confirm Password:</label>
-        <input  name="form_con_password" type="password" class="form-control" id="form_con_password" aria-describedby="form_con_passwordHelp" placeholder="Confirm Password">
-      </div>
-
       <div class="form-group">
         <label for="form_photo">Photo</label>
         <div>
-          <img src="/uploads/<?php echo $engineer['photo'] ?>" class="rounded" alt="..." width="200" height="200">
+          <?php if($photo){ ?>
+            <img src="/uploads/<?php echo $photo ?>" class="rounded" alt="..." width="200" height="200">
+         <?php } ?>
+ 
         </div>
         <div>
           <input id="form_photo" type="file" name="form_photo" size="20">

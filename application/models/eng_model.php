@@ -44,16 +44,13 @@ class Eng_model extends CI_Model{
   }
 
   public function m_update_eng($data){
-    $query = "UPDATE engineers SET (name, phone, email,
-                fields_of_expertise, photo, linkedin_link,
-                  about_me, username, password)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    // UPDATE questions SET q_content =?
-    //           WHERE questions.id=?";
-    $values = array($data['c_name'],    $data['c_phone'],
+    $query = "UPDATE engineers SET name=?, email=?,
+                fields_of_expertise=?, photo=?, linkedin_link=?,
+                  about_me=?, username=?";
+    $values = array($data['c_name'],
                $data['c_email'],   $data['c_fields_expertise'],
                $data['c_photo'], $data['c_form_linkedin'], $data['c_aboutme'],
-               $data['c_username'],$data['c_password']);
+               $data['c_username']);
     return $this->db->query($query, $values);
   }
   public function m_delete_eng($id){

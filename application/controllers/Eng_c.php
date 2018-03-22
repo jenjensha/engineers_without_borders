@@ -106,36 +106,55 @@ public function c_add_comment_eng(){
       $cUser = $this->session->userdata('currentUser');
       $eng_id = $cUser['id'];
       //$result = $this->eng_model->select_one_eng($eng_id);
-      $result =$this->main_model->m_eng_details($eng_id);
+      $engineer =$this->main_model->m_eng_details($eng_id);
       $data = array(
-            'engineer'    => $result,
-            'cUser'		=> $cUser
+            'engineer'    => $engineer,
+            'cUser'		=> $cUser,
+            'photo' => $engineer['photo']
               );
       $this->load->view('users/engineer_edit_profile', $data);
     }
 
     public function c_update_eng(){
+      $this->load->model('main_model');
+      $config['upload_path']   = './uploads/';// relative to the root of this project
+    $config['allowed_types'] = 'gif|jpg|png';
+    $config['max_size']      = 5000;
+    $config['max_width']     = 2048;
+    $config['max_height']    = 2048;
+    $this->upload->initialize($config);
+      $cUser = $this->session->userdata('currentUser');
+       $engineer =$this->main_model->m_eng_details($cUser['id']);
+
       $this->form_validation->set_rules('form_name',              'Name',                     'trim|required');
-      $this->form_validation->set_rules('form_phone',             'Phone',                     'trim|required');
-      $this->form_validation->set_rules('form_email',             'Email',                     'trim|required|valid_email|is_unique[engineers.email]');
+      // $this->form_validation->set_rules('form_phone',             'Phone',                     'trim|required');
+      if ($engineer['email'] !== $this->input->post('form_email')) {
+        $this->form_validation->set_rules('form_email', 'Email', 'trim|required|valid_email|is_unique[engineers.email]');
+      }
+
       $this->form_validation->set_rules('form_fields_expertise',  'Fields_expertise',          'trim|required');
       $this->form_validation->set_rules('form_aboutme',           'Aboutme',                   'trim');
       $this->form_validation->set_rules('form_linkedin',           'LinkedIn',                   'trim');
-      $this->form_validation->set_rules('form_username',          'Username',                  'required|trim|min_length[5]|is_unique[engineers.username]');
-      $this->form_validation->set_rules('form_password',          'Password',                  'required|trim|min_length[7]');
-      $this->form_validation->set_rules('form_con_password',      'Password Confirmation', 'trim|required|matches[form_password]');
+
+      if($engineer['username'] !== $this->input->post('form_username')){
+      $this->form_validation->set_rules('form_username','Username','required|trim|min_length[5]|is_unique[engineers.username]');
+      }
+      
+      
       // $this->form_validation->set_rules('form_email',       'Email', 'required|valid_email|is_unique[users.email]');
 
           $upload_picture = $this->upload->do_upload('form_photo');
+          $photo = $upload_picture ? $this->upload->data() : NULL;
+
           if ($this->form_validation->run() == FALSE || $upload_picture == FALSE)
           {
                 $this->session->set_flashdata('error', 'invalid data');
-                $this->load->view('users/engineer_update_profile');
+                $this->load->view('users/engineer_update_profile', array( 'photo' => $photo));
           }
           else
           {
 
-            $photo = $this->upload->data();
+            
 
         $this->load->model('Eng_model');
         $data = array(
@@ -153,7 +172,7 @@ public function c_add_comment_eng(){
 
         $this->session->set_flashdata('success', 'Users successfully added. Thanks');
         $this->Eng_model->m_update_eng( $data );
-        redirect(base_url('register'));
+        redirect(base_url('/user/engineer/profile/'));
           }
     }
     public function eng_delete_profile() {
