@@ -1,6 +1,8 @@
 <?php
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use Aws\S3\S3Client as S3Client;
+
 class Eng_c extends CI_Controller{
 
 
@@ -144,7 +146,28 @@ public function c_add_comment_eng(){
       // $this->form_validation->set_rules('form_email',       'Email', 'required|valid_email|is_unique[users.email]');
 
           $upload_picture = $this->upload->do_upload('form_photo');
-          $photo = $upload_picture ? $this->upload->data() : NULL;
+
+          if ($upload_picture) {
+            $upload_picture = $this->upload->data();
+            // amazon upload code
+
+            $s3 = new S3Client([
+              'version' => 'latest',
+              'region'  => 'eu-central-1'
+            ]);
+            $bucket = getenv('S3_BUCKET')?: die('No S3_BUCKET env var found');
+
+            $upload = $s3->upload(
+              $bucket, // s3 bucket to upload towards
+              $upload_picture['file_name'], // filename you want to give on s3 for this upload
+              fopen($upload_picture['full_path'], 'rb'), // read the content of the picture
+              'public-read' // make it readable / public
+            );
+              
+            $photo = $upload['ObjectURL']; // get the actual file url of s3 file
+          } else {
+            $photo = NULL;
+          }
 
           if ($this->form_validation->run() == FALSE || $upload_picture == FALSE)
           {
@@ -162,7 +185,7 @@ public function c_add_comment_eng(){
           'c_phone'             => $this->input->post('form_phone',true),
           'c_email'             => $this->input->post('form_email',true),
           'c_fields_expertise'  => $this->input->post('form_fields_expertise',true),
-          'c_photo'             => $photo['file_name'],
+          'c_photo'             => $photo,
           'c_form_linkedin'     => $this->input->post('form_linkedin',true),
           'c_aboutme'           => $this->input->post('form_aboutme',true),
           'c_linkedin'          => $this->input->post('form_linkedin',true),

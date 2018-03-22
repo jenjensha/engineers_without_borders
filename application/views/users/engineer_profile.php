@@ -43,7 +43,7 @@
         <dl class="row">
           <dt class="col-sm-2">Picture:</dt>
           <dd class="col-sm-7">
-            <img src="/uploads/<?php echo $engineer['photo'] ?>" class="rounded" alt="..." width="200" height="200">
+            <img src="<?php echo $engineer['photo'] ?>" class="rounded" alt="..." width="200" height="200">
           </dd>
         </dl>
 

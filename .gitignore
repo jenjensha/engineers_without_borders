@@ -3,3 +3,4 @@ uploads/*
 vendor
 
 .heroku_config
+.env
