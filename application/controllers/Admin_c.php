@@ -153,14 +153,13 @@ class Admin_c extends CI_Controller{
 
   //delete functions:
 
-      public function c_delete_ngo($id){
-        $this->check_admin_logged_in();
-             // get the $id from the route url, post is not used
-			       // $id = $this->input->post('ngo_id');
-			       // $this->load->model('Admin_model');
-			       // $this->post_model->m_delete_ngo($id);
-		         redirect('/admin/ngos');
-      }
+  public function c_delete_ngo(){
+    $this->check_admin_logged_in();
+    $id = $this->input->post('ngo_id');
+	  $this->load->model('Admin_model');
+		$this->Admin_model->m_delete_ngo($id);
+		redirect('/admin/pending/ngos');
+  }
 
       public function c_delete_eng(){
         $this->check_admin_logged_in();
@@ -361,7 +360,7 @@ The EWB team');
 
       private function check_admin_logged_in() {
         if(empty($this->session->currentUser && $this->session->currentUser['role'] == 'admin')) {
-          $this->session->set_flashdata('error', 'Not allowed, please sign in as admin first.');
+          //$this->session->set_flashdata('error', 'Not allowed, please sign in as admin first.');
           redirect('/admin/login');
         }
       }

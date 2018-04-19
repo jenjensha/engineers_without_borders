@@ -103,7 +103,7 @@ header nav a {
 }
 
 .card-img-top {
-  max-height: 150px;
+  max-height: 400px;
   object-fit: cover;
 }
 

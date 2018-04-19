@@ -1,6 +1,6 @@
 <?php
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+use Aws\S3\S3Client as S3Client;
 class Ngo_c extends CI_Controller{
 
 
@@ -26,18 +26,42 @@ class Ngo_c extends CI_Controller{
     $config['max_height']    = 2048;
     $this->upload->initialize($config);
 
-		$this->form_validation->set_rules('form_name',            'Name',                      'trim|required');
-		$this->form_validation->set_rules('form_contact_person',   'Contact person',           'trim|required');
-    $this->form_validation->set_rules('form_contact_email',    'Email',                    'trim|required|valid_email|is_unique[ngos.contact_email]');
+		$this->form_validation->set_rules('form_name',            'Name', 'trim|required');
+		$this->form_validation->set_rules('form_contact_person',   'Contact person', 'trim|required');
+    $this->form_validation->set_rules('form_contact_email',    'Email','trim|required|valid_email|is_unique[ngos.contact_email]');
     $this->form_validation->set_rules('form_fields_activity',  'Fields of activity', 'trim|required');
-		$this->form_validation->set_rules('form_website',          'Website',                   'trim');
-    $this->form_validation->set_rules('form_username',         'Username',                  'required|trim|min_length[5]');
-    $this->form_validation->set_rules('form_password',         'Password',                  'required|trim|min_length[7]');
-		$this->form_validation->set_rules('form_con_password',     'password Confirmation', 'trim|required|matches[form_password]');
+		$this->form_validation->set_rules('form_website',          'Website','trim');
+    $this->form_validation->set_rules('form_username',         'Username','required|trim|min_length[5]');
+    $this->form_validation->set_rules('form_password',         'Password','required|trim|min_length[7]');
+		$this->form_validation->set_rules('form_con_password',     'password Confirmation','trim|required|matches[form_password]');
 		// $this->form_validation->set_rules('form_email',       'Email', 'required|valid_email|is_unique[users.email]');
 
-        $upload_picture = $this->upload->do_upload('form_profile_photo');
-      if ($this->form_validation->run() == FALSE || $upload_picture == FALSE)
+       
+     $isFileUploaded = $this->upload->do_upload('form_profile_photo');
+        
+        if ($isFileUploaded) {
+            $uploaded_file = $this->upload->data();
+            //var_dump($upload_picture);exit;
+            // amazon upload code
+            $s3 = new S3Client([
+              'version' => 'latest',
+              'region'  => 'eu-central-1'
+            ]);
+            $bucket = getenv('S3_BUCKET')?: die('No S3_BUCKET env var found');
+
+             $s3_upload = $s3->upload(
+              $bucket, // s3 bucket to upload towards
+              $uploaded_file['file_name'], // filename you want to give on s3 for this upload
+              fopen($uploaded_file['full_path'], 'rb'), // read the content of the picture
+              'public-read' // make it readable / public
+            );
+            
+             $photo = $s3_upload['ObjectURL']; // get the actual file url of s3 file
+          } else {
+            $photo = NULL;
+          }
+        
+      if ($this->form_validation->run() == FALSE || $isFileUploaded == FALSE)
       {
             $this->load->view('users/ngo_registration');
       }
@@ -53,7 +77,7 @@ class Ngo_c extends CI_Controller{
 				'c_website'           => $this->input->post('form_website',true),
         'c_username'          => $this->input->post('form_username',true),
         'c_password'          => $this->input->post('form_password',true),
-        'c_ngo_photo'     => $photo['file_name'],
+        'c_ngo_photo'     => $photo,
         );
 
 			$this->session->set_flashdata('success', 'Welcome to the community!');
@@ -63,11 +87,51 @@ class Ngo_c extends CI_Controller{
 	 }
 
     public function add_question(){
+       $config['upload_path']   = './uploads/';// relative to the root of this project
+    $config['allowed_types'] = 'gif|jpg|png';
+    $config['max_size']      = 5000;
+    $config['max_width']     = 2048;
+    $config['max_height']    = 2048;
+    $this->upload->initialize($config);
+
+
       $this->form_validation->set_rules('title', 'title', 'trim|required');
 			$this->form_validation->set_rules('q_content', 'description', 'trim|required');
       $this->form_validation->set_rules('when_needed', 'when needed', 'trim|required');
+     
 
-      if($this->form_validation->run() == FALSE){
+      $isFileUploaded = $this->upload->do_upload('attachment');
+        if ($isFileUploaded) {
+            $uploaded_file = $this->upload->data();
+            //var_dump($upload_picture);exit;
+            // amazon upload code
+            $s3 = new S3Client([
+              'version' => 'latest',
+              'region'  => 'eu-central-1'
+            ]);
+            $bucket = getenv('S3_BUCKET')?: die('No S3_BUCKET env var found');
+
+             $upload = $s3->upload(
+              $bucket, // s3 bucket to upload towards
+              $uploaded_file['file_name'], // filename you want to give on s3 for this upload
+              fopen($uploaded_file['full_path'], 'rb'), // read the content of the picture
+              'public-read' // make it readable / public
+            );
+
+             $photo = $upload['ObjectURL']; // get the actual file url of s3 file
+          } else {
+            $photo = NULL;
+          }
+        if ($this->form_validation->run() == FALSE || $isFileUploaded == FALSE)
+        {
+          
+          
+          $this->session->set_flashdata('error', 'invalid data');
+          $this->load->view('users/add_question', array('photo' => $photo));
+        }
+        else
+        {
+      if($this->form_validation->run() == FALSE || $isFileUploaded == FALSE){
         $this->load->view('/users/add_question');
       }
       else{
@@ -78,7 +142,7 @@ class Ngo_c extends CI_Controller{
           'c_title' => $this->input->post('title'),
         'c_content' => $this->input->post('q_content'),
           'c_when_needed' =>$this->input->post('when_needed'),
-          'c_attachment' =>$this->input->post('attachment'),
+          'c_attachment' => $photo,
           'cUser_id' => $cUser['id']
         );
 
@@ -86,7 +150,7 @@ class Ngo_c extends CI_Controller{
         $this->session->set_flashdata('success', 'Thank you for adding your question.');
         redirect('/');
       }
-    }
+    }}
 
 
     //14-11-2017 mohamed
@@ -121,24 +185,61 @@ class Ngo_c extends CI_Controller{
             }
 
   public function c_update_ngo(){
+
+    $this->load->model('main_model');
+    $config['upload_path']   = './uploads/';// relative to the root of this project
+    $config['allowed_types'] = 'gif|jpg|png';
+    $config['max_size']      = 5000;
+    $config['max_width']     = 2048;
+    $config['max_height']    = 2048;
+    $this->upload->initialize($config);
+      $cUser = $this->session->userdata('currentUser');
+       $ngo =$this->main_model->m_ngo_details($cUser['id']);
+
     $this->form_validation->set_rules('form_name', 'Name', 'trim|required');
     $this->form_validation->set_rules('form_contact_person', 'Contact person', 'trim|required');
-    $this->form_validation->set_rules('form_contact_email',  'Email', 'trim|required|valid_email');
+    if ($ngo['contact_email'] !== $this->input->post('form_contact_email')) {
+        $this->form_validation->set_rules('form_contact_email', 'Email', 'trim|required|valid_email|is_unique[ngos.contact_email]');
+      }
+    
     $this->form_validation->set_rules('form_fields_activity','Fields of activity', 'trim|required');
     $this->form_validation->set_rules('form_website','Website', 'trim');
-    $this->form_validation->set_rules('form_username','Username','required|trim|min_length[5]');
-    $this->form_validation->set_rules('form_password','Password','required|trim|min_length[7]');
-    $this->form_validation->set_rules('form_con_password','password Confirmation', 'trim|required|matches[form_password]');
 
+    if($ngo['username'] !== $this->input->post('form_username')){
+      $this->form_validation->set_rules('form_username','Username','required|trim|min_length[5]|is_unique[ngos.username]');
+    }
 
-        $upload_picture = $this->upload->do_upload('form_photo');
-        if ($this->form_validation->run() == FALSE || $upload_picture == FALSE)
+        $isFileUploaded = $this->upload->do_upload('form_photo');
+        
+        if ($isFileUploaded) {
+            $uploaded_file = $this->upload->data();
+            //var_dump($upload_picture);exit;
+            // amazon upload code
+            $s3 = new S3Client([
+              'version' => 'latest',
+              'region'  => 'eu-central-1'
+            ]);
+            $bucket = getenv('S3_BUCKET')?: die('No S3_BUCKET env var found');
+
+             $upload = $s3->upload(
+              $bucket, // s3 bucket to upload towards
+              $uploaded_file['file_name'], // filename you want to give on s3 for this upload
+              fopen($uploaded_file['full_path'], 'rb'), // read the content of the picture
+              'public-read' // make it readable / public
+            );
+
+             $photo = $upload['ObjectURL']; // get the actual file url of s3 file
+          } else {
+            $photo = NULL;
+          }
+        if ($this->form_validation->run() == FALSE || $isFileUploaded == FALSE)
         {
-          $this->load->view('users/ngo_update_profile');
+          $this->session->set_flashdata('error', 'invalid data');
+          $this->load->view('users/ngo_update_profile', array('photo' => $photo));
         }
         else
         {
-          $photo = $this->upload->data();
+         $this->load->model('Ngo_model');
 
           $data = array(
     				'c_name'              => $this->input->post('form_name',true),
@@ -147,13 +248,12 @@ class Ngo_c extends CI_Controller{
             'c_fields_activity'   => $this->input->post('form_fields_activity',true),
     				'c_website'           => $this->input->post('form_website',true),
             'c_username'          => $this->input->post('form_username',true),
-            'c_password'          => $this->input->post('form_password',true),
-            'c_photo'             => $photo['file_name'],
+            'c_photo'             => $photo,
             'id'                  => $this->session->currentUser['id'],
 
             );
 
-            $this->load->model('Ngo_model');
+           
             $this->session->set_flashdata('success', 'Data successfully updated');
             $this->Ngo_model->m_update_ngo( $data );
             redirect('/user/ngo/profile');

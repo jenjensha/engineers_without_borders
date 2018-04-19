@@ -15,6 +15,7 @@ class Ngo_model extends CI_Model{
     $query = "
       INSERT INTO ngos (name, contact_person, contact_email, fields_of_activity, website, username, password, ngo_photo)
       VALUES(?,?,?,?,?,?,?,?)";
+      
     $password_hash = password_hash($data['c_password'], PASSWORD_DEFAULT);
 
     $values = array($data['c_name'], $data['c_contact_person'], $data['c_contact_email'], $data['c_fields_activity'], $data['c_website'], $data['c_username'], $password_hash, $data['c_ngo_photo']);
@@ -45,12 +46,12 @@ class Ngo_model extends CI_Model{
 
       public function m_update_ngo($data) {
         $query = "UPDATE ngos SET name = ?, contact_person = ?, contact_email = ?,
-                    fields_of_activity = ?, website = ?, username = ?, password = ?, ngo_photo = ?
+                    fields_of_activity = ?, website = ?, username = ?, ngo_photo = ?
                   WHERE id = ?";
 
         $values = array($data['c_name'], $data['c_contact_person'],
                       $data['c_contact_email'], $data['c_fields_activity'],
-                      $data['c_website'], $data['c_username'], $data['c_password'], $data['c_photo'], $data['id']);
+                      $data['c_website'], $data['c_username'], $data['c_photo'], $data['id']);
         $this->db->query($query, $data);
       }
 

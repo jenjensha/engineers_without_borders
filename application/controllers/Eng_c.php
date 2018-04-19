@@ -119,7 +119,7 @@ public function c_add_comment_eng(){
 
     public function c_update_eng(){
       $this->load->model('main_model');
-      $config['upload_path']   = './uploads/';// relative to the root of this project
+    $config['upload_path']   = './uploads/';// relative to the root of this project
     $config['allowed_types'] = 'gif|jpg|png';
     $config['max_size']      = 5000;
     $config['max_width']     = 2048;

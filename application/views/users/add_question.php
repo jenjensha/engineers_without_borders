@@ -4,7 +4,7 @@
   <div class="container">
     <?php $this->load->view('validation_errors') ?>
 
-    <form method="POST" action="/questions/add">
+    <form method="POST" action="/questions/add" enctype="multipart/form-data" accept-charset="utf-8">
       <div class="form-group">
         <label for="title">Add your question</label>
         <textarea class="form-control" id="title" name="title" ><?php echo set_value('title'); ?></textarea>

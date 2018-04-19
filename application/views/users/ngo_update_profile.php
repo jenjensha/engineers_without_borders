@@ -38,15 +38,7 @@
       </div>
 
 
-      <div class="form-group">
-        <label for="form_password">Password:</label>
-        <input  name="form_password" type="password" class="form-control" id="form_password" aria-describedby="form_passwordHelp" placeholder="Please enter your password">
-      </div>
-
-      <div class="form-group">
-        <label for="form_con_password">Confirm Password:</label>
-        <input  name="form_con_password" type="password" class="form-control" id="form_con_password" aria-describedby="form_con_passwordHelp" placeholder="Confirm Password">
-      </div>
+      
 
       <div class="form-group">
         <label for="form_photo">Photo</label>

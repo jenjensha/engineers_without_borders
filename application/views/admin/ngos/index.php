@@ -42,7 +42,7 @@
                     <input type="hidden" name="ngo_id" value="<?= $item['id']; ?>">
                     <input type="submit" value="Details" class="btn btn-primary btn-sm" >
                 </form>
-                <form method="post" action="/admin/engineers">
+                <form method="post" action="/admin/ngo/delete">
                   <input type="hidden" name="ngo_id" value="<?= $item['id']; ?>">
                   <input type="submit" value="Delete" class="btn btn-danger btn-sm">
                 </form>
